@@ -32,6 +32,22 @@ setup(
         include=['poaitran'],
         exclude=['tests']
     ),
-    # TODO: entrypoints
-    # TODO: classifiers
+    entry_points={
+        'console_scripts': [
+            'poaitran = poaitran.cli:Main.quickstart'
+        ]
+    },
+    classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Development Status :: 5 - Production/Stable',
+        'License :: Other/Proprietary License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ]
 )
