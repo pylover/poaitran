@@ -1,8 +1,11 @@
 import easycli
 
+from . import translator
 
-class Main(easycli.Root):
-    __completion__ = True
+
+class TranslateCommand(easycli.SubCommand):
+    __command__ = 'translate'
+    __aliases__ = ['t']
     __arguments__ = [
         easycli.Argument(
             'filename',
@@ -12,7 +15,21 @@ class Main(easycli.Root):
                  'search for the "<lang>/LC_MESSAGES/*.po" file in the '
                  'current directory and translates all the directory'
         ),
+    ]
+
+    def __call__(self, args):
+        if args.filename:
+            translator.translatefile(args.filename)
+
+        else:
+            raise ValueError()
+
+
+class Main(easycli.Root):
+    __completion__ = True
+    __arguments__ = [
         easycli.Argument('--version', action='store_true'),
+        TranslateCommand,
     ]
 
     def __call__(self, args):
@@ -21,5 +38,4 @@ class Main(easycli.Root):
             print(__version__)
             return
 
-        if args.filename:
-            translator.translate(args.filename)
+        self._parser.print_help()

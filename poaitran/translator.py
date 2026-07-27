@@ -21,10 +21,8 @@ def translatefile(filename):
         if message.string.strip():
             continue
 
-        print(f'translating: {message.id}')
+        print(f'{filename}:{message.lineno} translating: {message.id}')
         message.string = translate(message.id)
-        for e in message.check():
-            raise e
 
     with open(filename, 'wb') as f:
         write_po(f, catalog)
