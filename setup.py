@@ -18,6 +18,7 @@ with open(
 dependencies = [
     'easycli',
     'openai',
+    'babel',
 ]
 
 

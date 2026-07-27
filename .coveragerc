@@ -1,0 +1,9 @@
+[run]
+source = poaitran
+patch = subprocess
+omit = 
+
+[report]
+exclude_lines=
+	raise NotImplementedError
+	pragma: no cover
