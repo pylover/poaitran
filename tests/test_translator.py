@@ -1,11 +1,11 @@
 import pytest
 from babel.messages.pofile import read_po
 
-from poaitran import translatefile
+from poaitran import translatefile, translatedirectory
 from poaitran.settings import settings
 
 
-def test_translate(mktmpfile, monkeytrans):
+def test_translatefile(mktmpfile, monkeytrans):
     pofilecontent = '''
 msgid ""
 msgstr ""
@@ -25,6 +25,71 @@ msgstr ""
 
     assert catalog.get('foo').string == 'FOO'
     assert catalog.get('bar').string == 'bar'
+
+
+def test_translatefile_bundlesize(mktmpfile, monkeytrans):
+    pofilecontent = '''
+msgid ""
+msgstr ""
+"Language: ar\\n"
+
+msgid "foo"
+msgstr "FOO"
+
+msgid "bar"
+msgstr ""
+'''
+
+    bsbackup = settings[settings.backend].bundlesize
+    settings[settings.backend].bundlesize = 1
+    pofile = mktmpfile(pofilecontent, 'foo.po')
+    translatefile(pofile, settings)
+
+    with open(pofile, 'r', encoding='utf-8') as f:
+        catalog = read_po(f)
+
+    assert catalog.get('foo').string == 'FOO'
+    assert catalog.get('bar').string == 'bar'
+    settings[settings.backend].bundlesize = bsbackup
+
+
+def test_translatedirectory(mktmptree, monkeytrans, chdir):
+    pofilecontent = '''
+msgid ""
+msgstr ""
+"Language: ar\\n"
+
+msgid "foo"
+msgstr "FOO"
+
+msgid "bar"
+msgstr ""
+'''
+    rootdir = mktmptree({
+        'fa_IR': {
+            'LC_MESSAGES': {
+                'messages.po': pofilecontent
+            }
+        },
+        'ar_OM': {
+            'LC_MESSAGES': {
+                'messages.po': pofilecontent
+            }
+        },
+    })
+    with chdir(rootdir):
+        translatedirectory(settings)
+        with open(f'fa_IR/LC_MESSAGES/messages.po', 'r') as f:
+            catalog = read_po(f)
+
+        assert catalog.get('foo').string == 'FOO'
+        assert catalog.get('bar').string == 'bar'
+
+        with open(f'ar_OM/LC_MESSAGES/messages.po', 'r') as f:
+            catalog = read_po(f)
+
+        assert catalog.get('foo').string == 'FOO'
+        assert catalog.get('bar').string == 'bar'
 
 
 def test_translate_missinglangugae(mktmpfile):

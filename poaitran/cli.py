@@ -1,3 +1,5 @@
+import os
+
 import easycli
 
 from . import translator
@@ -17,10 +19,15 @@ class TranslateCommand(easycli.SubCommand):
                  'current directory and translates all the directory'
         ),
         easycli.Argument(
+            '-C', '--directory',
+            default='.',
+            help='Change to this path before starting, default is: `.`'
+        ),
+        easycli.Argument(
             '--openai-model',
             default=settings.openai.model,
             help=f'The OpenAI model to use, default: {settings.openai.model}'
-        )
+        ),
     ]
 
     def __call__(self, args):
@@ -28,7 +35,10 @@ class TranslateCommand(easycli.SubCommand):
             translator.translatefile(args.filename, settings)
 
         else:
-            raise ValueError()
+            if args.directory != '.':
+                os.chdir(args.directory)
+
+            translator.translatedirectory(os.curdir, settings)
 
 
 class Main(easycli.Root):

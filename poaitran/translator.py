@@ -1,3 +1,6 @@
+import glob
+
+from babel import Locale, UnknownLocaleError
 from babel.messages.pofile import read_po, write_po
 
 from . import azure
@@ -55,3 +58,9 @@ def translatefile(filename, settings):
 
     with open(filename, 'wb') as f:
         write_po(f, catalog)
+
+
+def translatedirectory(settings):
+    for pofile in glob.glob(f'**/LC_MESSAGES/*.po'):
+        translatefile(pofile, settings)
+
