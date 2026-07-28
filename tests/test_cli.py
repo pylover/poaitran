@@ -20,7 +20,7 @@ def test_help(cliapp):
         assert stdout.startswith('usage: poaitran')
 
 
-def test_translatefile(cliapp, mktmpfile):
+def test_translatefile(cliapp, mktmpfile, bddcli_bootpatch):
     pofilecontent = '''
 msgid ""
 msgstr ""
@@ -34,7 +34,12 @@ msgstr ""
 
 '''
     pofile = mktmpfile(pofilecontent, 'foo.po')
-    with cliapp(['translate', pofile]):
+    patchcode = \
+        'import poaitran\n' \
+        'translate = lambda m, l: m\n' \
+        'poaitran.azure.translate = translate\n'
+
+    with bddcli_bootpatch(patchcode), cliapp(['translate', pofile]):
         assert stderr == ''
         assert status == 0
         assert stdout == f'{pofile}:9 translating: bar\n'

@@ -1,11 +1,29 @@
 from babel.messages.pofile import read_po, write_po
 
+from .settings import settings
+from . import azure
 
-def translate(exp):
-    return exp
+
+def translate(bundle, lang):
+    request = []
+
+    for msg in bundle:
+        request.append(msg.id)
+
+    if settings.backend == 'azure':
+        response = azure.translate(request, lang)
+    else:
+        raise NotImplementedError(settings.backend)
+
+    for msg, result in zip(bundle, response):
+        msg.string = result
 
 
 def translatefile(filename):
+    bundlesize = settings[settings.backend].bundlesize
+    bundle = []
+    count = 0
+
     with open(filename, 'r', encoding='utf-8') as f:
         catalog = read_po(f)
 
@@ -13,8 +31,14 @@ def translatefile(filename):
     if lang is None or not lang.strip():
         raise ValueError(f'Missing "Language:" header in {filename}')
 
+    def _translate():
+        nonlocal bundle, count
+        translate(bundle, lang)
+        bundle = []
+        cound = 0
+
     for message in catalog:
-        # Skips the blank header block
+        # skip the blank header block
         if not message.id:
             continue
 
@@ -22,7 +46,13 @@ def translatefile(filename):
             continue
 
         print(f'{filename}:{message.lineno} translating: {message.id}')
-        message.string = translate(message.id)
+        bundle.append(message)
+        count += 1
+        if count >= bundlesize:
+            _translate()
+
+    if count:
+        _translate()
 
     with open(filename, 'wb') as f:
         write_po(f, catalog)

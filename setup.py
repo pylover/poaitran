@@ -19,6 +19,7 @@ dependencies = [
     'easycli',
     'openai',
     'babel',
+    'snam',
 ]
 
 

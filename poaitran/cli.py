@@ -1,6 +1,7 @@
 import easycli
 
 from . import translator
+from .settings import settings
 
 
 class TranslateCommand(easycli.SubCommand):
@@ -15,6 +16,11 @@ class TranslateCommand(easycli.SubCommand):
                  'search for the "<lang>/LC_MESSAGES/*.po" file in the '
                  'current directory and translates all the directory'
         ),
+        easycli.Argument(
+            '--openai-model',
+            default=settings.openai.model,
+            help=f'The OpenAI model to use, default: {settings.openai.model}'
+        )
     ]
 
     def __call__(self, args):

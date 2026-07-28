@@ -4,7 +4,7 @@ from babel.messages.pofile import read_po
 from poaitran import translatefile
 
 
-def test_translate(mktmpfile):
+def test_translate(mktmpfile, monkeytrans):
     pofilecontent = '''
 msgid ""
 msgstr ""
