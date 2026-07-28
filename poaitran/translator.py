@@ -1,6 +1,6 @@
 import glob
 
-from babel import Locale, UnknownLocaleError
+from babel import Locale
 from babel.messages.pofile import read_po, write_po
 
 from . import azure
@@ -29,13 +29,11 @@ def translatefile(filename, settings):
     with open(filename, 'r', encoding='utf-8') as f:
         catalog = read_po(f)
 
-    lang = catalog.locale_identifier
-    if lang is None or not lang.strip():
-        raise ValueError(f'Missing "Language:" header in {filename}')
+    locale = Locale.parse(catalog.locale_identifier)
 
     def _translate():
         nonlocal bundle, count
-        translate(bundle, lang, settings)
+        translate(bundle, locale.language, settings)
         bundle = []
         count = 0
 
@@ -61,6 +59,5 @@ def translatefile(filename, settings):
 
 
 def translatedirectory(settings):
-    for pofile in glob.glob(f'**/LC_MESSAGES/*.po'):
+    for pofile in glob.glob('**/LC_MESSAGES/*.po'):
         translatefile(pofile, settings)
-

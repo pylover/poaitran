@@ -1,4 +1,5 @@
 import pytest
+from babel import UnknownLocaleError
 from babel.messages.pofile import read_po
 
 from poaitran import translatefile, translatedirectory
@@ -79,13 +80,13 @@ msgstr ""
     })
     with chdir(rootdir):
         translatedirectory(settings)
-        with open(f'fa_IR/LC_MESSAGES/messages.po', 'r') as f:
+        with open('fa_IR/LC_MESSAGES/messages.po') as f:
             catalog = read_po(f)
 
         assert catalog.get('foo').string == 'FOO'
         assert catalog.get('bar').string == 'bar'
 
-        with open(f'ar_OM/LC_MESSAGES/messages.po', 'r') as f:
+        with open('ar_OM/LC_MESSAGES/messages.po') as f:
             catalog = read_po(f)
 
         assert catalog.get('foo').string == 'FOO'
@@ -98,7 +99,22 @@ msgid ""
 msgstr ""
 '''
     pofile = mktmpfile(pofilecontent, 'foo.po')
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(TypeError) as e:
         translatefile(pofile, settings)
 
-    assert e.exconly() == f'ValueError: Missing "Language:" header in {pofile}'
+    assert e.exconly().startswith(
+        'TypeError: Empty locale identifier value: None'
+    )
+
+    pofilecontent = '''
+msgid ""
+msgstr ""
+
+"Language: xx_YY\\n"
+'''
+    pofile = mktmpfile(pofilecontent, 'foo.po')
+    with pytest.raises(UnknownLocaleError) as e:
+        translatefile(pofile, settings)
+
+    assert e.exconly() == \
+        'babel.core.UnknownLocaleError: unknown locale \'xx_YY\''

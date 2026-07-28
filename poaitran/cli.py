@@ -38,7 +38,7 @@ class TranslateCommand(easycli.SubCommand):
             if args.directory != '.':
                 os.chdir(args.directory)
 
-            translator.translatedirectory(os.curdir, settings)
+            translator.translatedirectory(settings)
 
 
 class Main(easycli.Root):

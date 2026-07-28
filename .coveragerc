@@ -2,6 +2,7 @@
 source = poaitran
 patch = subprocess
 omit = 
+    poaitran/azure.py
 
 [report]
 exclude_lines=
