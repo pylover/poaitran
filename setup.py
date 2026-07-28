@@ -18,7 +18,7 @@ with open(
 dependencies = [
     'easycli',
     'openai',
-    'babel',
+    'babel >= 2.18, < 3',
     'snam',
 ]
 
