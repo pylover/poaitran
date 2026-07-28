@@ -1,10 +1,9 @@
 from babel.messages.pofile import read_po, write_po
 
-from .settings import settings
 from . import azure
 
 
-def translate(bundle, lang):
+def translate(bundle, lang, settings):
     request = []
 
     for msg in bundle:
@@ -19,7 +18,7 @@ def translate(bundle, lang):
         msg.string = result
 
 
-def translatefile(filename):
+def translatefile(filename, settings):
     bundlesize = settings[settings.backend].bundlesize
     bundle = []
     count = 0
@@ -33,9 +32,9 @@ def translatefile(filename):
 
     def _translate():
         nonlocal bundle, count
-        translate(bundle, lang)
+        translate(bundle, lang, settings)
         bundle = []
-        cound = 0
+        count = 0
 
     for message in catalog:
         # skip the blank header block

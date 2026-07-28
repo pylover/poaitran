@@ -25,7 +25,7 @@ class TranslateCommand(easycli.SubCommand):
 
     def __call__(self, args):
         if args.filename:
-            translator.translatefile(args.filename)
+            translator.translatefile(args.filename, settings)
 
         else:
             raise ValueError()

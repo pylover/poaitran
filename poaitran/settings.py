@@ -34,9 +34,7 @@ def loadrcfiles():
     if not os.path.exists(filename):
         filename = f'/home/{user}/.config/{appname}/{appname}.yml'
 
-    if os.path.exists(filename):
-        print(f'loading config file: {filename}')
-
+    if os.path.exists(filename):  # pragma: no cover
         settings <<= filename
 
 

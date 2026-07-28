@@ -2,6 +2,7 @@ import pytest
 from babel.messages.pofile import read_po
 
 from poaitran import translatefile
+from poaitran.settings import settings
 
 
 def test_translate(mktmpfile, monkeytrans):
@@ -17,7 +18,7 @@ msgid "bar"
 msgstr ""
 '''
     pofile = mktmpfile(pofilecontent, 'foo.po')
-    translatefile(pofile)
+    translatefile(pofile, settings)
 
     with open(pofile, 'r', encoding='utf-8') as f:
         catalog = read_po(f)
@@ -33,6 +34,6 @@ msgstr ""
 '''
     pofile = mktmpfile(pofilecontent, 'foo.po')
     with pytest.raises(ValueError) as e:
-        translatefile(pofile)
+        translatefile(pofile, settings)
 
     assert e.exconly() == f'ValueError: Missing "Language:" header in {pofile}'
